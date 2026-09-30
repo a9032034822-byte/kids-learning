@@ -177,7 +177,8 @@ export async function archiveScreen(app, prof) {
   const L = prof.uiLang || 'ru';
   const screen = h('div', { class: 'screen kid', style: { '--c': prof.color || '#FFB703' } }, kidHeader(app, prof, { back: '#/kid', title: ui(L, 'archive') }));
   const list = h('div', { class: 'week-list' });
-  for (const w of [...app.index.weeks].reverse()) {
+  // будущие недели ребёнку не показываем — они видны только родителю
+  for (const w of [...app.index.weeks].filter((x) => x.from <= app.today).reverse()) {
     let done = 0, total = 0;
     try {
       const data = await app.week(w.id);
