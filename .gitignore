@@ -1,0 +1,10 @@
+# Исходные (открытые) тексты недели и временные файлы сборки — НИКОГДА не коммитить
+.work/
+work/
+*.plain.json
+*.src.md
+*.decrypted.json
+tmp/
+node_modules/
+.DS_Store
+test-output/

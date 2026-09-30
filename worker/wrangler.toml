@@ -1,0 +1,10 @@
+# Для развёртывания из командной строки (необязательно; основной путь — через сайт Cloudflare, см. README).
+#   npx wrangler kv namespace create KIDS   → вставьте выданный id ниже
+#   npx wrangler deploy
+name = "kids-learning-sync"
+main = "sync-worker.js"
+compatibility_date = "2026-09-01"
+
+[[kv_namespaces]]
+binding = "KIDS"
+id = "ВСТАВЬТЕ_ID_ПРОСТРАНСТВА_KV"

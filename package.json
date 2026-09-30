@@ -1,0 +1,14 @@
+{
+  "name": "kids-learning",
+  "private": true,
+  "type": "module",
+  "description": "Лесная школа — учебные листы недели для детей (PWA). Контент зашифрован.",
+  "scripts": {
+    "check": "node tools/kl.mjs check",
+    "build-week": "node tools/kl.mjs build",
+    "verify": "node tools/kl.mjs verify",
+    "check-shell": "node tools/kl.mjs check-shell",
+    "test": "node tools/selftest.mjs",
+    "serve": "npx --yes http-server -p 8080 -c-1 ."
+  }
+}
