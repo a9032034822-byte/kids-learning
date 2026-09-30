@@ -3,15 +3,15 @@ import { h } from '../util.js';
 import { deriveMaster, importMaster, toB64, MIN_PASSWORD_LENGTH } from '../crypto.js';
 import { loadIndex, loadManifest } from '../content.js';
 import * as store from '../store.js';
-import { capybara, bear, bigBear } from '../characters.js';
+import { capybara, panda, bigBear } from '../characters.js';
 
 function trio() {
   return h(
     'div',
     { class: 'trio' },
-    h('div', { class: 'trio-a', html: capybara({ mood: 'happy' }) }),
+    h('div', { class: 'trio-a', html: panda({ mood: 'happy' }) }),
     h('div', { class: 'trio-b', html: bigBear({ mood: 'happy' }) }),
-    h('div', { class: 'trio-c', html: bear({ mood: 'happy' }) })
+    h('div', { class: 'trio-c', html: capybara({ mood: 'happy' }) })
   );
 }
 

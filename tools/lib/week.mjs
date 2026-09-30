@@ -10,6 +10,7 @@ export class BuildError extends Error {}
 const SUBJECTS = new Set(['ru', 'lit', 'math', 'en', 'sci', 'logic', 'fr', 'other']);
 const TYPES = new Set(['rule', 'choice', 'input', 'fix', 'split', 'stress', 'column', 'sort', 'read', 'poem', 'offline', 'page']);
 const STAGES = new Set(['read', 'part', 'hints', 'nohints']);
+const COMPANIONS = new Set(['panda', 'capybara', 'bear']);
 
 /** Экспорт Google Docs экранирует знаки (\_ \[ \!), в таблицах — дважды. Снимаем экранирование. */
 export function normalizeMd(s) {
@@ -261,9 +262,23 @@ export function loadWeekSource(dir) {
     kids[key] = { key, poem: kid.poem || null, days, pages, lessonsMd };
   }
   if (!Object.keys(kids).length) throw new BuildError('week.json: нет kids');
+  // Профили детей: family.json рядом с week.json (копия «ПРИЛОЖЕНИЕ_семья (family.json)» с Drive) главнее поля family в week.json.
+  let family = src.family || null;
+  const famFile = path.join(dir, 'family.json');
+  if (fs.existsSync(famFile)) {
+    try {
+      family = JSON.parse(fs.readFileSync(famFile, 'utf8'));
+    } catch (e) {
+      throw new BuildError(`family.json — ошибка JSON: ${e.message}`);
+    }
+  }
+  for (const k of (family && family.kids) || []) {
+    if (!k.key || !k.name) throw new BuildError('family: у каждого ребёнка нужны key и name');
+    if (k.companion && !COMPANIONS.has(k.companion)) throw new BuildError(`family: персонаж «${k.companion}» — нужен panda, capybara или bear`);
+  }
   return {
     week: { id: src.from, week: src.week, from: src.from, to: src.to, title: src.title || `Неделя ${src.week}`, kids },
-    family: src.family || null,
+    family,
     warnings,
   };
 }

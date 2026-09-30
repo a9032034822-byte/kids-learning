@@ -1,4 +1,5 @@
-// Свои персонажи: капибара, медвежонок и большой медведь (родители).
+// Свои персонажи: панда (старшая), капибара (младший), медвежонок (запасной)
+// и большой медведь в очках (родители).
 // Нарисованы вручную простыми фигурами SVG. mood: happy | cheer | think
 
 const EYES = {
@@ -48,6 +49,34 @@ export function capybara({ mood = 'happy', accent = '#FF9F1C' } = {}) {
   <ellipse cx="54" cy="90" rx="9" ry="6" fill="#FF8FA3" opacity=".55"/><ellipse cx="146" cy="90" rx="9" ry="6" fill="#FF8FA3" opacity=".55"/>
   <circle cx="100" cy="28" r="17" fill="${accent}"/><circle cx="94" cy="22" r="4" fill="#fff" opacity=".45"/>
   <path d="M100 12 Q112 2 120 10 Q110 16 100 12Z" fill="#52B788"/>
+  ${thinkBubble(mood)}
+</svg>`;
+}
+
+const PANDA_EYES = {
+  happy: (x, y) => `<circle cx="${x}" cy="${y}" r="7.5" fill="#fff"/><circle cx="${x + 0.5}" cy="${y + 0.5}" r="4.6" fill="#1B1B1F"/><circle cx="${x + 2}" cy="${y - 1.5}" r="1.7" fill="#fff"/>`,
+  cheer: (x, y) => `<path d="M${x - 7} ${y + 2} Q${x} ${y - 8} ${x + 7} ${y + 2}" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>`,
+  think: (x, y) => `<circle cx="${x}" cy="${y}" r="7" fill="#fff"/><circle cx="${x + 1.5}" cy="${y - 2}" r="4.2" fill="#1B1B1F"/><circle cx="${x + 2.6}" cy="${y - 3.4}" r="1.4" fill="#fff"/>`,
+};
+
+export function panda({ mood = 'happy', accent = '#9B5DE5' } = {}) {
+  const white = '#FBFAF6', shade = '#ECE9E1', black = '#26262B';
+  return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <ellipse cx="100" cy="190" rx="58" ry="8" fill="#000" opacity=".08"/>
+  <path d="M46 154 C46 116 70 106 100 106 C130 106 154 116 154 154 C154 178 134 188 100 188 C66 188 46 178 46 154Z" fill="${white}" stroke="${shade}" stroke-width="3"/>
+  <ellipse cx="100" cy="160" rx="30" ry="23" fill="${shade}"/>
+  ${arms(mood, black, 148)}
+  <ellipse cx="76" cy="186" rx="16" ry="9" fill="${black}"/><ellipse cx="124" cy="186" rx="16" ry="9" fill="${black}"/>
+  <circle cx="54" cy="44" r="20" fill="${black}"/><circle cx="146" cy="44" r="20" fill="${black}"/>
+  <circle cx="100" cy="84" r="56" fill="${white}" stroke="${shade}" stroke-width="3"/>
+  <ellipse cx="75" cy="80" rx="16" ry="21" fill="${black}" transform="rotate(-28 75 80)"/>
+  <ellipse cx="125" cy="80" rx="16" ry="21" fill="${black}" transform="rotate(28 125 80)"/>
+  ${PANDA_EYES[mood](77, 78)}${PANDA_EYES[mood](123, 78)}
+  <path d="M91 97 Q100 91 109 97 Q106 104 100 105 Q94 104 91 97Z" fill="${black}"/>
+  <path d="M100 105 L100 109" stroke="#3D2412" stroke-width="3" stroke-linecap="round"/>
+  ${mouth(mood, 100, 112)}
+  <ellipse cx="60" cy="102" rx="9" ry="6" fill="#FF8FA3" opacity=".6"/><ellipse cx="140" cy="102" rx="9" ry="6" fill="#FF8FA3" opacity=".6"/>
+  <path d="M140 26 L126 16 L128 36Z M140 26 L156 18 L152 38Z" fill="${accent}"/><circle cx="140" cy="27" r="5" fill="${accent}" stroke="#fff" stroke-width="2"/>
   ${thinkBubble(mood)}
 </svg>`;
 }
@@ -103,6 +132,7 @@ export function bigBear({ mood = 'happy', accent = '#2A9D8F' } = {}) {
 export function avatar(profile, mood = 'happy') {
   if (!profile) return bigBear({ mood });
   if (profile.id === 'parent') return bigBear({ mood });
+  if (profile.companion === 'panda') return panda({ mood, accent: profile.accent || '#9B5DE5' });
   if (profile.companion === 'capybara') return capybara({ mood, accent: profile.accent || '#FF9F1C' });
   return bear({ mood, accent: profile.accent || '#3A86FF' });
 }

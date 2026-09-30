@@ -10,7 +10,7 @@
 //   node tools/kl.mjs rekey                          — сменить пароль: OLD_FAMILY_PASSWORD → FAMILY_PASSWORD
 //   node tools/kl.mjs check-shell                    — все ли файлы приложения есть в sw.js
 //
-// Папка недели (в .work/, вне git): week.json + src/*.md — тексты 4 документов с Google Drive.
+// Папка недели (в .work/, вне git): week.json + family.json + src/*.md — тексты 4 документов с Google Drive.
 // В вывод не печатается ничего из содержимого — только количества.
 
 import fs from 'node:fs';
@@ -89,7 +89,7 @@ function mergeFamily(index, family, keysInWeek) {
     if (cur) Object.assign(cur, f, { id: cur.id });
     else {
       const id = 'k' + (kids.length + 1);
-      const k = { id, color: COLORS[kids.length % COLORS.length], uiLang: 'ru', gender: 'm', companion: kids.length % 2 ? 'bear' : 'capybara', ...f };
+      const k = { id, color: COLORS[kids.length % COLORS.length], uiLang: 'ru', gender: 'm', companion: kids.length % 2 ? 'capybara' : 'panda', ...f };
       k.id = id;
       kids.push(k);
       byKey.set(f.key, k);
@@ -99,10 +99,10 @@ function mergeFamily(index, family, keysInWeek) {
     if (byKey.has(key)) continue;
     const id = 'k' + (kids.length + 1);
     const name = key.charAt(0) + key.slice(1).toLowerCase();
-    const k = { id, key, name, color: COLORS[kids.length % COLORS.length], uiLang: 'ru', gender: 'm', companion: kids.length % 2 ? 'bear' : 'capybara' };
+    const k = { id, key, name, color: COLORS[kids.length % COLORS.length], uiLang: 'ru', gender: 'm', companion: kids.length % 2 ? 'capybara' : 'panda' };
     kids.push(k);
     byKey.set(key, k);
-    console.warn(`! новый ребёнок «${name.slice(0, 1)}…» без настроек family — заданы значения по умолчанию`);
+    console.warn(`! новый ребёнок «${name.slice(0, 1)}…» без настроек family.json — заданы значения по умолчанию`);
   }
   return byKey;
 }

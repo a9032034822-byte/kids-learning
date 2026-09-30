@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { capybara, bear } from '../src/characters.js';
+import { capybara, panda } from '../src/characters.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
@@ -22,8 +22,8 @@ function icon({ pad = 0 } = {}) {
   <rect width="${s}" height="${s}" rx="${pad ? 0 : 112}" fill="url(#g)"/>
   <g transform="translate(${pad} ${pad}) scale(${k})">
     <ellipse cx="256" cy="470" rx="220" ry="30" fill="#52B788"/>
-    <g transform="translate(40 150) scale(1.35)">${inner(bear({ mood: 'happy', accent: '#3A86FF' }))}</g>
-    <g transform="translate(200 120) scale(1.6)">${inner(capybara({ mood: 'happy' }))}</g>
+    <g transform="translate(20 110) scale(1.6)">${inner(panda({ mood: 'happy' }))}</g>
+    <g transform="translate(236 160) scale(1.35)">${inner(capybara({ mood: 'happy' }))}</g>
   </g>
 </svg>`;
 }

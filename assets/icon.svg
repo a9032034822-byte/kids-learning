@@ -3,28 +3,26 @@
   <rect width="512" height="512" rx="112" fill="url(#g)"/>
   <g transform="translate(0 0) scale(1)">
     <ellipse cx="256" cy="470" rx="220" ry="30" fill="#52B788"/>
-    <g transform="translate(40 150) scale(1.35)">
+    <g transform="translate(20 110) scale(1.6)">
   <ellipse cx="100" cy="190" rx="58" ry="8" fill="#000" opacity=".08"/>
-  <path d="M46 154 C46 116 70 106 100 106 C130 106 154 116 154 154 C154 178 134 188 100 188 C66 188 46 178 46 154Z" fill="#A0622D"/>
-  <ellipse cx="100" cy="158" rx="32" ry="25" fill="#F1D3A8"/>
-  <ellipse cx="50" cy="148" rx="11" ry="19" fill="#86501F" transform="rotate(18 50 148)"/>
-          <ellipse cx="150" cy="148" rx="11" ry="19" fill="#86501F" transform="rotate(-18 150 148)"/>
-  <ellipse cx="76" cy="186" rx="15" ry="8" fill="#86501F"/><ellipse cx="124" cy="186" rx="15" ry="8" fill="#86501F"/>
-  <circle cx="54" cy="46" r="20" fill="#A0622D"/><circle cx="54" cy="46" r="10" fill="#F1D3A8"/>
-  <circle cx="146" cy="46" r="20" fill="#A0622D"/><circle cx="146" cy="46" r="10" fill="#F1D3A8"/>
-  <circle cx="100" cy="84" r="55" fill="#A0622D"/>
-  <ellipse cx="100" cy="104" rx="29" ry="22" fill="#F1D3A8"/>
-  <path d="M90 93 Q100 86 110 93 Q107 101 100 102 Q93 101 90 93Z" fill="#2B1B0E"/>
-  <path d="M100 102 L100 107" stroke="#3D2412" stroke-width="3" stroke-linecap="round"/>
-  <path d="M91 110 Q100 118 109 110" stroke="#3D2412" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-  <circle cx="78" cy="74" r="6.5" fill="#2B1B0E"/><circle cx="80.2" cy="71.8" r="2.2" fill="#fff"/><circle cx="122" cy="74" r="6.5" fill="#2B1B0E"/><circle cx="124.2" cy="71.8" r="2.2" fill="#fff"/>
-  <ellipse cx="62" cy="96" rx="9" ry="6" fill="#FF8FA3" opacity=".55"/><ellipse cx="138" cy="96" rx="9" ry="6" fill="#FF8FA3" opacity=".55"/>
-  <path d="M56 58 Q58 22 100 22 Q142 22 144 58 Q100 44 56 58Z" fill="#3A86FF"/>
-  <path d="M54 58 Q100 42 146 58 L146 66 Q100 50 54 66Z" fill="#1D3557" opacity=".35"/>
-  <circle cx="100" cy="20" r="11" fill="#FFD166"/>
+  <path d="M46 154 C46 116 70 106 100 106 C130 106 154 116 154 154 C154 178 134 188 100 188 C66 188 46 178 46 154Z" fill="#FBFAF6" stroke="#ECE9E1" stroke-width="3"/>
+  <ellipse cx="100" cy="160" rx="30" ry="23" fill="#ECE9E1"/>
+  <ellipse cx="50" cy="148" rx="11" ry="19" fill="#26262B" transform="rotate(18 50 148)"/>
+          <ellipse cx="150" cy="148" rx="11" ry="19" fill="#26262B" transform="rotate(-18 150 148)"/>
+  <ellipse cx="76" cy="186" rx="16" ry="9" fill="#26262B"/><ellipse cx="124" cy="186" rx="16" ry="9" fill="#26262B"/>
+  <circle cx="54" cy="44" r="20" fill="#26262B"/><circle cx="146" cy="44" r="20" fill="#26262B"/>
+  <circle cx="100" cy="84" r="56" fill="#FBFAF6" stroke="#ECE9E1" stroke-width="3"/>
+  <ellipse cx="75" cy="80" rx="16" ry="21" fill="#26262B" transform="rotate(-28 75 80)"/>
+  <ellipse cx="125" cy="80" rx="16" ry="21" fill="#26262B" transform="rotate(28 125 80)"/>
+  <circle cx="77" cy="78" r="7.5" fill="#fff"/><circle cx="77.5" cy="78.5" r="4.6" fill="#1B1B1F"/><circle cx="79" cy="76.5" r="1.7" fill="#fff"/><circle cx="123" cy="78" r="7.5" fill="#fff"/><circle cx="123.5" cy="78.5" r="4.6" fill="#1B1B1F"/><circle cx="125" cy="76.5" r="1.7" fill="#fff"/>
+  <path d="M91 97 Q100 91 109 97 Q106 104 100 105 Q94 104 91 97Z" fill="#26262B"/>
+  <path d="M100 105 L100 109" stroke="#3D2412" stroke-width="3" stroke-linecap="round"/>
+  <path d="M91 112 Q100 120 109 112" stroke="#3D2412" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="60" cy="102" rx="9" ry="6" fill="#FF8FA3" opacity=".6"/><ellipse cx="140" cy="102" rx="9" ry="6" fill="#FF8FA3" opacity=".6"/>
+  <path d="M140 26 L126 16 L128 36Z M140 26 L156 18 L152 38Z" fill="#9B5DE5"/><circle cx="140" cy="27" r="5" fill="#9B5DE5" stroke="#fff" stroke-width="2"/>
   
 </g>
-    <g transform="translate(200 120) scale(1.6)">
+    <g transform="translate(236 160) scale(1.35)">
   <ellipse cx="100" cy="190" rx="60" ry="8" fill="#000" opacity=".08"/>
   <path d="M42 152 C42 114 68 104 100 104 C132 104 158 114 158 152 C158 178 136 188 100 188 C64 188 42 178 42 152Z" fill="#B9793F"/>
   <ellipse cx="100" cy="158" rx="34" ry="25" fill="#DDAA72"/>
