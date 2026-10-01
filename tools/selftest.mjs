@@ -11,7 +11,7 @@ import { numToRu } from '../src/numwords.js';
 import { renderMarkdown } from '../src/markdown.js';
 import { matches } from '../src/util.js';
 import * as store from '../src/store.js';
-import { parseRule, normalizeMd, extractPages } from './lib/week.mjs';
+import { parseRule, normalizeMd, extractPages, youtubeId, normVideos, loadWeekSource } from './lib/week.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 let n = 0;
@@ -58,6 +58,28 @@ assert.equal(parseRule({ name: 'x', see: '208 — («двести ноль во�
 assert.equal(normalizeMd('Wow\\\\\\! \\_\\_ \\[й\\]'), 'Wow! __ [й]');
 assert.deepEqual(extractPages('шапка\n\n— стр. 1 —\n\nА\n\n— стр. 2 —\n\nБ').map((p) => [p.n, p.md]), [[1, 'А'], [2, 'Б']]);
 ok('правила «Видишь/Пишешь», страницы распечатки, экранирование Google Docs');
+
+// ролики YouTube к песням
+assert.equal(youtubeId('https://www.youtube.com/watch?v=abcDEF12345&t=3'), 'abcDEF12345');
+assert.equal(youtubeId('https://youtu.be/abcDEF12345'), 'abcDEF12345');
+assert.equal(youtubeId('https://www.youtube.com/shorts/xyz_-678901'), 'xyz_-678901');
+assert.equal(youtubeId('abcDEF12345'), 'abcDEF12345');
+assert.equal(youtubeId('https://example.org/watch?v=short'), null);
+assert.deepEqual(normVideos({ youtube: 'https://youtu.be/abcDEF12345', title: 'A' }, 't'), [{ youtube: 'abcDEF12345', title: 'A' }]);
+assert.throws(() => normVideos('не ссылка', 't'));
+{
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'kl-vid-'));
+  fs.cpSync(path.join(ROOT, 'docs/example'), tmp, { recursive: true });
+  const w = JSON.parse(fs.readFileSync(path.join(tmp, 'week.json'), 'utf8'));
+  const kid = Object.values(w.kids)[0];
+  kid.days[0].lessons.push({ subject: 'fr', title: 'Français', tasks: [{ type: 'offline', icon: '🎵', q: 'Chanson' }, { type: 'offline', icon: '🎵', q: 'Своя', video: 'Q1w2E3r4T5y' }] });
+  fs.writeFileSync(path.join(tmp, 'week.json'), JSON.stringify(w));
+  fs.writeFileSync(path.join(tmp, 'videos.json'), JSON.stringify({ weeks: { 0: { youtube: 'https://youtu.be/abcDEF12345', title: 'Песня' }, 1: 'zzzzzzzzzzz' } }));
+  const songs = Object.values(loadWeekSource(tmp).week.kids)[0].days[0].lessons.at(-1).tasks;
+  assert.deepEqual(songs.map((t) => t.video[0].youtube), ['abcDEF12345', 'Q1w2E3r4T5y']);
+  fs.rmSync(tmp, { recursive: true });
+}
+ok('ролики YouTube: ссылки, id, привязка videos.json к песням недели');
 
 // слияние прогресса (last-writer-wins)
 store.put('p-t', 'a', { v: 1 });

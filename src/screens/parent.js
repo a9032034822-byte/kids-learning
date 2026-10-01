@@ -125,6 +125,18 @@ async function lessonsView(app, kidId, weekId) {
     )
   );
   wrap.append(h('details', { class: 'panel', open: true }, h('summary', {}, '🗓️ Расписание недели'), sched));
+  // ролики недели — ссылками, чтобы родитель мог посмотреть заранее
+  const videos = new Map();
+  kid.days.forEach((d) => d.lessons.forEach((l) => l.tasks.forEach((tk) => [tk.video].flat().forEach((v) => v && /^[A-Za-z0-9_-]{11}$/.test(v.youtube) && !videos.has(v.youtube) && videos.set(v.youtube, v.title || tk.q)))));
+  if (videos.size)
+    wrap.append(
+      h(
+        'details',
+        { class: 'panel' },
+        h('summary', {}, `🎵 Ролики недели (${videos.size})`),
+        h('ul', { class: 'parent-videos' }, [...videos].map(([id, title]) => h('li', {}, h('a', { href: `https://www.youtube.com/watch?v=${id}`, target: '_blank', rel: 'noopener noreferrer' }, title))))
+      )
+    );
   wrap.append(h('article', { class: 'panel lesson-doc', html: kid.lessonsMd ? renderMarkdown(kid.lessonsMd) : '<p>Файл уроков не загружен.</p>' }));
   if (kid.pages && kid.pages.length) {
     const pages = h('div', { class: 'pages' });

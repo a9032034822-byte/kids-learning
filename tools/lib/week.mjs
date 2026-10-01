@@ -94,6 +94,42 @@ function calc({ a, op, b }) {
   throw new BuildError('неизвестное действие ' + op);
 }
 
+const YT_ID = /^[A-Za-z0-9_-]{11}$/;
+
+/** id ролика из ссылки YouTube (watch?v=, youtu.be/, shorts/, embed/) или сам id. */
+export function youtubeId(s) {
+  const v = String(s || '').trim();
+  if (YT_ID.test(v)) return v;
+  const m = v.match(/(?:youtu\.be\/|[?&]v=|\/(?:embed|shorts|live)\/)([A-Za-z0-9_-]{11})(?![A-Za-z0-9_-])/);
+  return m ? m[1] : null;
+}
+
+/** "ID" | {youtube, title} | [...] → [{youtube, title}] */
+export function normVideos(v, where) {
+  return [v].flat().filter(Boolean).map((x) => {
+    const o = typeof x === 'string' ? { youtube: x } : x;
+    const id = youtubeId(o.youtube || o.url);
+    if (!id) throw new BuildError(`${where}: ролик «${o.youtube || o.url || ''}» — нужна ссылка YouTube или id из 11 знаков`);
+    return { youtube: id, title: String(o.title || '') };
+  });
+}
+
+/** Ролики недели из videos.json (копия «ПРИЛОЖЕНИЕ_ролики (videos.json)»): {"weeks": {"N": ролик или список}}. */
+function weekVideos(dir, week) {
+  const file = path.join(dir, 'videos.json');
+  if (!fs.existsSync(file)) return [];
+  let src;
+  try {
+    src = JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch (e) {
+    throw new BuildError(`videos.json — ошибка JSON: ${e.message}`);
+  }
+  const entry = Object.entries((src && src.weeks) || {}).find(([k]) => Number(k) === Number(week));
+  return entry ? normVideos(entry[1], `videos.json, неделя ${week}`) : [];
+}
+
+const isSong = (lesson, t) => lesson.subject === 'fr' && t.type === 'offline' && t.icon === '🎵';
+
 function normTask(raw, ctx, warn) {
   const t = { ...raw };
   const where = `${ctx.kid} ${ctx.date} «${ctx.lesson}» задание ${ctx.i + 1} (${t.type})`;
@@ -181,6 +217,7 @@ function normTask(raw, ctx, warn) {
       return t;
     case 'offline':
       need(t.q, 'нужен q — что сделать');
+      if (t.video) t.video = normVideos(t.video, where);
       return t;
     case 'page':
       need(t.page != null, 'нужен page');
@@ -262,6 +299,19 @@ export function loadWeekSource(dir) {
     kids[key] = { key, poem: kid.poem || null, days, pages, lessonsMd };
   }
   if (!Object.keys(kids).length) throw new BuildError('week.json: нет kids');
+  // Ролики к песням недели: задания offline с icon 🎵 в уроках французского, если у задания нет своего video.
+  const vids = weekVideos(dir, src.week);
+  if (vids.length) {
+    let songs = 0;
+    for (const kid of Object.values(kids))
+      kid.days.forEach((d) => d.lessons.forEach((l) => l.tasks.forEach((t) => {
+        if (isSong(l, t) && !t.video) {
+          t.video = vids;
+          songs++;
+        }
+      })));
+    if (!songs) warn(`videos.json: ролики недели ${src.week} не к чему привязать — нет заданий offline с icon «🎵» во французском`);
+  }
   // Профили детей: family.json рядом с week.json (копия «ПРИЛОЖЕНИЕ_семья (family.json)» с Drive) главнее поля family в week.json.
   let family = src.family || null;
   const famFile = path.join(dir, 'family.json');
@@ -289,10 +339,11 @@ export function summarize(week) {
     const tasks = kid.days.flatMap((d) => d.lessons.flatMap((l) => l.tasks));
     const byType = {};
     tasks.forEach((t) => (byType[t.type] = (byType[t.type] || 0) + 1));
+    const videos = new Set(tasks.flatMap((t) => (t.video || []).map((v) => v.youtube)));
     lines.push(
       `  ${kid.key.slice(0, 1)}…: дней ${kid.days.length}, уроков ${kid.days.reduce((s, d) => s + d.lessons.length, 0)}, заданий ${tasks.length} (` +
         Object.entries(byType).map(([k, v]) => `${k} ${v}`).join(', ') +
-        `), страниц ${kid.pages.length}, уроки для родителя: ${kid.lessonsMd ? 'есть' : 'НЕТ'}, стих: ${kid.poem ? 'есть' : 'нет'}`
+        `), страниц ${kid.pages.length}, уроки для родителя: ${kid.lessonsMd ? 'есть' : 'НЕТ'}, стих: ${kid.poem ? 'есть' : 'нет'}, роликов: ${videos.size}`
     );
   }
   return lines.join('\n');

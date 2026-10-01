@@ -59,6 +59,9 @@ const S = {
     question: 'Вопрос',
     tapToHear: 'Нажми на клеточку, чтобы послушать',
     round: 'Круг',
+    sing: 'Песня',
+    playVideo: 'Включить песню',
+    needNet: 'Ролик открывается только с интернетом. Попроси маму или папу включить его.',
   },
   en: {
     check: 'Check',
@@ -116,6 +119,9 @@ const S = {
     question: 'Question',
     tapToHear: 'Tap a box to hear it',
     round: 'Round',
+    sing: 'Sing along',
+    playVideo: 'Play the song',
+    needNet: 'The video needs the internet. Ask Mom or Dad to turn it on.',
   },
   fr: {
     check: 'Vérifier',
@@ -173,6 +179,9 @@ const S = {
     question: 'Question',
     tapToHear: 'Touche pour écouter',
     round: 'Tour',
+    sing: 'Chante !',
+    playVideo: 'La chanson',
+    needNet: 'Il faut Internet pour la vidéo.',
   },
 };
 

@@ -1,21 +1,47 @@
 // Задание вне планшета: «Сделай в тетради», таймер где нужен, кнопка «готово».
-// Родитель подтверждает выполнение у себя.
+// Родитель подтверждает выполнение у себя. Песня может быть с роликом YouTube (поле video).
 import { h } from '../util.js';
 import { t } from '../i18n.js';
 import { listenBtn } from './common.js';
 
+const YT_ID = /^[A-Za-z0-9_-]{11}$/;
+
+// Ролик грузится только по нажатию и с youtube-nocookie.com: до нажатия YouTube ничего не получает.
+function videoBlock(v, label, L, ctx) {
+  const box = h('div', { class: 'video-box' });
+  const btn = h('button', { type: 'button', class: 'btn-big go video-play' }, '▶ ', label);
+  btn.onclick = () => {
+    if (navigator.onLine === false) return ctx.feedback('info', '📶 ' + t(L, 'needNet'));
+    box.replaceChildren(
+      h('iframe', {
+        src: `https://www.youtube-nocookie.com/embed/${v.youtube}?rel=0&playsinline=1&modestbranding=1&autoplay=1`,
+        title: v.title || 'YouTube',
+        allow: 'autoplay; encrypted-media; fullscreen; picture-in-picture',
+        allowfullscreen: true,
+        referrerpolicy: 'strict-origin-when-cross-origin',
+      })
+    );
+    box.classList.add('playing');
+    box.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  };
+  box.append(btn);
+  return box;
+}
+
 export function mount(el, task, ctx) {
   const L = ctx.lang;
+  const videos = [task.video].flat().filter((v) => v && YT_ID.test(v.youtube));
   el.append(
     h(
       'div',
       { class: 'offline-card' },
       h('div', { class: 'offline-icon' }, task.icon || '📓'),
-      h('div', { class: 'offline-kicker' }, t(L, 'notebook')),
+      h('div', { class: 'offline-kicker' }, t(L, videos.length ? 'sing' : 'notebook')),
       h('div', { class: 'offline-q' }, task.q, listenBtn(ctx, task.q)),
       task.details ? h('p', { class: 'offline-details' }, task.details) : null
     )
   );
+  videos.forEach((v) => el.append(videoBlock(v, videos.length > 1 && v.title ? v.title : t(L, 'playVideo'), L, ctx)));
   if (task.page) el.append(ctx.pageToggle(task.page));
 
   let words = null;
