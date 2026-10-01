@@ -161,7 +161,7 @@ function trail(app, prof, meta, kid, day, L) {
               title: taskTitle(tk, lang),
               onclick: () => app.go(`#/kid/play/${meta.id}/${lesson.id}/${i}`),
             },
-            h('span', { class: 'node-ic' }, s === 'done' || s === 'approved' ? '✓' : s === 'pending' ? '⏳' : TASK_ICONS[tk.type] || '⭐')
+            h('span', { class: 'node-ic' }, s === 'done' || s === 'approved' ? '✓' : s === 'pending' ? '⏳' : tk.icon || TASK_ICONS[tk.type] || '⭐')
           ),
           h('span', { class: 'node-label', lang }, taskTitle(tk, lang), s === 'pending' ? h('small', {}, ' · ' + ui(L, 'wait')) : null),
           here ? h('span', { class: 'node-buddy', html: avatar(prof, 'happy') }) : null

@@ -1,7 +1,7 @@
 // Service worker: приложение работает без интернета после первой загрузки.
 // Оболочка — из кэша (обновляется в фоне), content/ и settings.json — сначала из сети.
 // При изменении файлов оболочки поднимите VERSION (tools/kl.mjs check-shell напомнит).
-const VERSION = 'kl-2026-10-01-1';
+const VERSION = 'kl-2026-10-01-2';
 const SHELL = [
   './',
   'index.html',
