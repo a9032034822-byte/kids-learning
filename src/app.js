@@ -2,6 +2,7 @@
 import { h, clear, todayISO } from './util.js';
 import * as store from './store.js';
 import * as sync from './sync.js';
+import * as propisi from './propisi.js';
 import { loadSettings, loadManifest, loadIndex, keysFromMaster, loadWeek, precache, scheduledDates } from './content.js';
 import { unlockScreen, noContentScreen } from './screens/unlock.js';
 import { pickerScreen, pinScreen, setupPinsScreen } from './screens/picker.js';
@@ -38,7 +39,7 @@ export const app = {
     else location.hash = hash;
   },
   week(id) {
-    return loadWeek(this.keys, this.index, id);
+    return loadWeek(this.keys, this.index, id).then((w) => propisi.inject(w, id, this.kids, this.settings.holidays, this.today));
   },
   scheduled(kidId) {
     return scheduledDates(this.index, kidId);

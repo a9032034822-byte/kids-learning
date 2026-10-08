@@ -10,8 +10,9 @@ import * as read from './read.js';
 import * as poem from './poem.js';
 import * as offline from './offline.js';
 import * as page from './page.js';
+import * as propisi from './propisi.js';
 
-export const TASKS = { rule, choice, input, fix, split, stress, column, sort, read, poem, offline, page };
+export const TASKS = { rule, choice, input, fix, split, stress, column, sort, read, poem, offline, page, propisi };
 
 /** Задания, где ошибки можно вернуть на повтор отдельными пунктами. */
 export const RETRYABLE = new Set(['rule', 'choice', 'input', 'fix', 'split', 'stress', 'column', 'sort']);

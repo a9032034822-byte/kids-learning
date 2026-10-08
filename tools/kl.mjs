@@ -191,9 +191,9 @@ async function rekey() {
 
 function checkShell() {
   const sw = fs.readFileSync(path.join(ROOT, 'sw.js'), 'utf8');
-  const listed = new Set([...sw.matchAll(/'([^']+\.(?:js|css|html|json|webmanifest|svg|png))'/g)].map((m) => m[1]));
+  const listed = new Set([...sw.matchAll(/'([^']+\.(?:js|css|html|json|webmanifest|svg|png|woff))'/g)].map((m) => m[1]));
   const walk = (d) => fs.readdirSync(path.join(ROOT, d), { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
-  const need = [...walk('src'), ...walk('assets')].map((f) => f.split(path.sep).join('/')).concat(['index.html', 'styles.css', 'manifest.webmanifest', 'settings.json']);
+  const need = [...walk('src'), ...walk('assets')].map((f) => f.split(path.sep).join('/')).filter((f) => !f.endsWith('.txt')).concat(['index.html', 'styles.css', 'manifest.webmanifest', 'settings.json']);
   const miss = need.filter((f) => !listed.has(f));
   const extra = [...listed].filter((f) => f !== 'sw.js' && !fs.existsSync(path.join(ROOT, f)));
   if (miss.length) console.error('✖ нет в SHELL (sw.js): ' + miss.join(', '));

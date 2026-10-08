@@ -499,3 +499,15 @@ details.panel[open] > summary { margin-bottom: 12px; }
 .video-box iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .parent-videos { margin: 0; padding-left: 1.2em; }
 .parent-videos li { margin: 6px 0; font-size: 18px; }
+
+/* Прописи */
+@font-face { font-family: 'Bad Script'; font-style: normal; font-weight: 400; font-display: block; src: url('assets/fonts/bad-script-cyrillic-400-normal.woff') format('woff'); }
+.pz-head { text-align: center; margin: 4px 0 8px; }
+.pz-hint { color: var(--muted); font-size: 17px; }
+.pz-tools { position: sticky; top: 0; z-index: 3; display: flex; justify-content: center; gap: 10px; padding: 6px 0; }
+.propisi { max-width: 720px; margin: 0 auto; }
+.pz-sheet { background: #fff; border-radius: 22px; padding: 10px 0; box-shadow: var(--shadow); }
+.pz-line { display: block; width: 100%; aspect-ratio: 1000 / 184; }
+.pz-blank { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; background: #fbfdff; }
+.pz-blank + .pz-sample { margin-top: 14px; border-top: 1px dashed #e4e9f2; }
+.pz-loading { text-align: center; padding: 40px; color: var(--muted); }

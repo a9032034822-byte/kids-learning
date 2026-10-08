@@ -11,6 +11,7 @@ import { numToRu } from '../src/numwords.js';
 import { renderMarkdown } from '../src/markdown.js';
 import { matches } from '../src/util.js';
 import * as store from '../src/store.js';
+import * as propisi from '../src/propisi.js';
 import { parseRule, normalizeMd, extractPages, youtubeId, normVideos, loadWeekSource } from './lib/week.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -102,6 +103,51 @@ assert.ok(files.includes('manifest.json') && files.includes('index.enc') && file
 for (const f of files) assert.ok(!fs.readFileSync(path.join(out, f), 'utf8').includes('Пример'), 'открытый текст в ' + f);
 fs.rmSync(out, { recursive: true });
 ok('сборка и проверка вымышленной недели; в файлах нет открытого текста');
+
+// прописи: очереди и расчёт задания
+{
+  const ABC = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'.split('');
+  for (const [kind, q] of Object.entries(propisi.QUEUES)) {
+    const letters = q.flatMap((x) => x.letters);
+    assert.deepEqual(letters, ABC, kind + ': 33 буквы по алфавиту без повторов');
+    q.forEach((_, i) => propisi.repeatOf(i).forEach((j) => assert.ok(j >= 0 && j < i, `${kind} ${i}: повтор ${j}`)));
+  }
+  assert.equal(propisi.QUEUES.liza.find((x) => x.syl.length !== 12), undefined);
+  const s0 = propisi.plan('sasha', 0);
+  assert.deepEqual(s0.letters, ['А а']);
+  assert.deepEqual(s0.rows, [{ syl: 'ма на ра ла ам ан ар'.split(' '), rep: [], blanks: 1 }]);
+  const s2 = propisi.plan('sasha', 2);
+  assert.deepEqual(s2.rows[0].syl, 'ва во ву вы ви ве вя'.split(' '));
+  assert.deepEqual(s2.rows[0].rep, ['Б б', 'ба', 'А а', 'ар']);
+  const l4 = propisi.plan('liza', 4);
+  assert.deepEqual(l4.letters, ['З з', 'И и']);
+  assert.deepEqual(l4.rows, [
+    { syl: 'за зо зу зы зе зя'.split(' '), rep: ['Ё ё', 'Ж ж'], blanks: 2 },
+    { syl: 'зи би ви ги ди жи'.split(' '), rep: ['Д д', 'Е е'], blanks: 2 },
+  ]);
+  const l5 = propisi.plan('liza', 5);
+  assert.deepEqual(l5.rows.map((r) => [r.syl.join(' '), r.rep]), [
+    ['ка ко ку ки ке ак', ['З з', 'И и']],
+    ['ок ай ой уй ей ий', ['А а', 'Б б']],
+  ]);
+  assert.deepEqual(propisi.plan('sasha', 27).letters, ['ъ']);
+  assert.deepEqual(propisi.plan('liza', 13).letters, ['Щ щ', 'ъ']);
+  for (let i = 0; i < 33; i++) {
+    const p = propisi.plan('sasha', i);
+    assert.ok(!p.rows[0].rep.some((x) => p.rows[0].syl.includes(x)), 'слог повторения совпал с сегодняшним: ' + i);
+  }
+  assert.equal(propisi.plan('sasha', 33), null);
+  assert.equal(propisi.kindOf({ key: 'САША' }), 'sasha');
+  assert.equal(propisi.kindOf({ key: 'ЛИЗА' }), 'liza');
+  assert.equal(propisi.getPos('k-test', 'liza'), 4);
+  const wk = { kids: { kt: { days: [{ date: '2026-10-07', lessons: [{ id: 'a', tasks: [] }] }, { date: '2026-10-08', lessons: [{ id: 'b', tasks: [] }] }, { date: '2026-10-09', lessons: [] }] } } };
+  propisi.inject(wk, 'w', [{ id: 'kt', key: 'САША' }], [], '2026-10-08');
+  propisi.inject(wk, 'w', [{ id: 'kt', key: 'САША' }], [], '2026-10-08');
+  assert.deepEqual(wk.kids.kt.days.map((d) => d.lessons.map((l) => l.id)), [['a'], ['b', 'propisi-2026-10-08'], []]);
+  propisi.inject(wk, 'w', [{ id: 'kt', key: 'САША' }], [{ from: '2026-10-01', to: '2026-10-10' }], '2026-10-08');
+  assert.deepEqual(wk.kids.kt.days[1].lessons.map((l) => l.id), ['b']);
+}
+ok('прописи: очереди, повторение, эталонные задания, урок в учебный день');
 
 execFileSync(process.execPath, [path.join(ROOT, 'tools/kl.mjs'), 'check-shell'], { encoding: 'utf8' });
 ok('sw.js: список файлов оболочки полный');

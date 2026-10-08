@@ -125,6 +125,8 @@ export async function playerScreen(app, prof, rest) {
     const ctx = {
       lang,
       gender: prof.gender,
+      kidId: prof.id,
+      weekId: e.weekId,
       items: e.items,
       poem: e.kid && e.kid.poem,
       sfx,

@@ -1,7 +1,7 @@
 // Service worker: приложение работает без интернета после первой загрузки.
 // Оболочка — из кэша (обновляется в фоне), content/ и settings.json — сначала из сети.
 // При изменении файлов оболочки поднимите VERSION (tools/kl.mjs check-shell напомнит).
-const VERSION = 'kl-2026-10-01-2';
+const VERSION = 'kl-2026-10-08-1';
 const SHELL = [
   './',
   'index.html',
@@ -13,6 +13,7 @@ const SHELL = [
   'assets/icon-512.png',
   'assets/icon-maskable-512.png',
   'assets/apple-touch-icon.png',
+  'assets/fonts/bad-script-cyrillic-400-normal.woff',
   'src/app.js',
   'src/characters.js',
   'src/content.js',
@@ -20,6 +21,7 @@ const SHELL = [
   'src/i18n.js',
   'src/markdown.js',
   'src/numwords.js',
+  'src/propisi.js',
   'src/sound.js',
   'src/store.js',
   'src/sync.js',
@@ -39,6 +41,7 @@ const SHELL = [
   'src/tasks/offline.js',
   'src/tasks/page.js',
   'src/tasks/poem.js',
+  'src/tasks/propisi.js',
   'src/tasks/read.js',
   'src/tasks/rule.js',
   'src/tasks/sort.js',
