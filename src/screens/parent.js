@@ -9,7 +9,7 @@ import * as store from '../store.js';
 import * as sync from '../sync.js';
 import { needsApproval } from '../tasks/index.js';
 import { renderSheet, fontReady } from '../tasks/propisi.js';
-import { writing, decodeLines } from '../propisi.js';
+import { writing, decodeLines, kindOf, getPos, setPos, plan, QUEUES } from '../propisi.js';
 import { taskTitle, dm, pageSheet } from './common.js';
 import { muted, setMuted } from '../sound.js';
 
@@ -193,6 +193,24 @@ async function progressView(app, kidId, weekId) {
     );
   }
   wrap.append(cards);
+
+  // прописи: позиция в очереди, поправить руками
+  const pz = app.kids.filter((k) => kindOf(k)).map((k) => {
+    const kind = kindOf(k);
+    const pos = getPos(k.id, kind);
+    const p = plan(kind, pos);
+    const move = (d) => (setPos(k.id, kind, pos + d), app.rerender());
+    return h(
+      'div',
+      { class: 'pin-row' },
+      h('span', { class: 'mini-avatar', html: avatar(k) }),
+      h('span', { class: 'pin-name' }, k.name),
+      h('span', {}, p ? `${pos + 1} из ${QUEUES[kind].length}: ${p.letters.join(', ')}` : 'очередь пройдена'),
+      h('button', { class: 'btn-soft small', disabled: pos > 0 ? null : true, onclick: () => move(-1) }, '−1'),
+      h('button', { class: 'btn-soft small', disabled: p ? null : true, onclick: () => move(1) }, '+1')
+    );
+  });
+  if (pz.length) wrap.append(h('details', { class: 'panel' }, h('summary', {}, '✍️ Позиция прописей'), h('div', { class: 'pin-rows' }, pz), h('p', { class: 'muted' }, 'Сегодняшние прописи берут эту позицию; «Готово» сдвигает её на одну.')));
 
   const kid = data && data.kids[kidId];
   if (!kid) return wrap;
