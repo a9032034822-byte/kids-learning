@@ -508,6 +508,9 @@ details.panel[open] > summary { margin-bottom: 12px; }
 .propisi { max-width: 720px; margin: 0 auto; }
 .pz-sheet { background: #fff; border-radius: 22px; padding: 10px 0; box-shadow: var(--shadow); }
 .pz-line { display: block; width: 100%; aspect-ratio: 1000 / 184; }
-.pz-blank { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; background: #fbfdff; }
+.pz-blank { background: #fbfdff; }
+.pz-w { touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.pz-parent { max-width: 560px; margin: 4px 0 14px; }
+.pz-parent .pz-sheet { box-shadow: none; border: 1px solid #e4e9f2; }
 .pz-blank + .pz-sample { margin-top: 14px; border-top: 1px dashed #e4e9f2; }
 .pz-loading { text-align: center; padding: 40px; color: var(--muted); }

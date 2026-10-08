@@ -8,6 +8,8 @@ import { pinHash } from '../crypto.js';
 import * as store from '../store.js';
 import * as sync from '../sync.js';
 import { needsApproval } from '../tasks/index.js';
+import { renderSheet, fontReady } from '../tasks/propisi.js';
+import { writing, decodeLines } from '../propisi.js';
 import { taskTitle, dm, pageSheet } from './common.js';
 import { muted, setMuted } from '../sound.js';
 
@@ -90,7 +92,7 @@ function countPending(app) {
     for (const [key, v] of Object.entries(e)) {
       if (!key.startsWith('t:') || !v.pending) continue;
       const [, weekId, ...rest] = key.split(':');
-      if (!store.approval(k.id, weekId, rest.join(':'))) n++;
+      if (!store.approval(k.id, weekId, rest.join(':')) && !store.redoAsked(k.id, weekId, rest.join(':'))) n++;
     }
   }
   return n;
@@ -149,11 +151,11 @@ async function lessonsView(app, kidId, weekId) {
 function statusOf(kidId, weekId, task) {
   const rec = store.taskRec(kidId, weekId, task.id);
   if (!rec || !rec.done) return { s: 'todo', rec };
-  if (needsApproval(task)) return { s: store.approval(kidId, weekId, task.id) ? 'approved' : 'pending', rec };
+  if (needsApproval(task)) return { s: store.approval(kidId, weekId, task.id) ? 'approved' : store.redoAsked(kidId, weekId, task.id) ? 'redo' : 'pending', rec };
   return { s: rec.errors > 0 ? (rec.fixed ? 'fixed' : 'errors') : 'done', rec };
 }
 
-const S_LABEL = { todo: '○ не начато', done: '✓ без ошибок', errors: '✎ с ошибками', fixed: '✓ ошибки исправлены', pending: '⏳ ждёт подтверждения', approved: '✓ подтверждено' };
+const S_LABEL = { todo: '○ не начато', done: '✓ без ошибок', errors: '✎ с ошибками', fixed: '✓ ошибки исправлены', pending: '⏳ ждёт подтверждения', approved: '✓ подтверждено', redo: '↩ вернули переписать' };
 
 async function progressView(app, kidId, weekId) {
   const data = await app.week(weekId);
@@ -206,9 +208,11 @@ async function progressView(app, kidId, weekId) {
           'div',
           { class: 'approve-row' },
           h('span', {}, TASK_ICONS[x.task.type] + ' ', h('b', {}, taskTitle(x.task, subject(x.lesson.subject).lang)), h('small', {}, ` · ${dm(x.day.date)} · ${x.lesson.title}`), rec && rec.extra && rec.extra.words ? h('small', {}, ` · слов: ${rec.extra.words}`) : null, rec && rec.extra && rec.extra.peeks != null ? h('small', {}, ` · подсмотрел(а) строк: ${rec.extra.peeks}`) : null),
-          h('button', { class: 'btn-ok', onclick: () => (store.setApproval(kidId, weekId, x.task.id, true), app.rerender()) }, '✓ Подтвердить')
+          x.task.type === 'propisi' ? h('button', { class: 'btn-soft', onclick: () => (store.setRedo(kidId, weekId, x.task.id), app.rerender()) }, '↩ Переписать') : null,
+          h('button', { class: 'btn-ok', onclick: () => (store.setApproval(kidId, weekId, x.task.id, true), app.rerender()) }, x.task.type === 'propisi' ? '✓ Принять' : '✓ Подтвердить')
         )
       );
+      if (x.task.type === 'propisi') list.append(propisiView(kidId, x.day.date));
     });
     wrap.append(h('div', { class: 'panel attention' }, h('h3', {}, `⏳ «В тетради» — ждут подтверждения (${pend.length})`), list));
   }
@@ -245,6 +249,14 @@ async function progressView(app, kidId, weekId) {
     wrap.append(box);
   }
   return wrap;
+}
+
+// Написанное ребёнком: образец и штрихи на линейке под ним.
+function propisiView(kidId, date) {
+  const w = writing(kidId, date);
+  const box = h('div', { class: 'propisi pz-parent' }, w ? '…' : h('small', { class: 'muted' }, 'Написанное ещё не пришло с планшета ребёнка.'));
+  if (w) fontReady().then(() => box.replaceChildren(renderSheet(w.s, decodeLines(w.l))));
+  return box;
 }
 
 function settingsView(app) {

@@ -57,7 +57,7 @@ export const app = {
     await sync.init({
       url: this.settings.syncUrl,
       keys,
-      slots: () => ['settings', 'parent', ...this.kids.map((k) => store.kidSlot(k.id))],
+      slots: () => ['settings', 'parent', ...this.kids.flatMap((k) => [store.kidSlot(k.id), propisi.writingSlot(k.id)])],
     });
     await Promise.race([sync.syncNow(), new Promise((r) => setTimeout(r, 4000))]);
     sync.every(5 * 60 * 1000);

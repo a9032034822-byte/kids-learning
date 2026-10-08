@@ -135,6 +135,63 @@ export function setPos(kidId, kind, pos) {
 
 export const taskIdOf = (date) => 'propisi-' + date;
 
+// ---------- написанное: отдельный слот w-<id ребёнка>, ключ 'w:<дата>' ----------
+// Штрих — плоский массив целых [x, y, p, …]. В хранилище — строкой: первая точка 5 символами,
+// дальше по 3 символа на точку (dx, dy, нажим). Хранятся последние 10 учебных дней.
+
+const A64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+const KEEP_DAYS = 10;
+const MAX_SLOT = 600_000; // воркер принимает до 1 МБ уже зашифрованного блока
+
+export const writingSlot = (kidId) => 'w-' + kidId;
+
+export function encodeStroke(s) {
+  let x = s[0], y = s[1];
+  let out = A64[x >> 6] + A64[x & 63] + A64[y >> 6] + A64[y & 63] + A64[s[2] || 0];
+  for (let i = 3; i < s.length; i += 3) {
+    const dx = s[i] - x, dy = s[i + 1] - y;
+    const n = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) / 31));
+    for (let k = 1; k <= n; k++) {
+      const nx = Math.round(s[i - 3] + ((s[i] - s[i - 3]) * k) / n);
+      const ny = Math.round(s[i - 2] + ((s[i + 1] - s[i - 2]) * k) / n);
+      out += A64[nx - x + 32] + A64[ny - y + 32] + A64[s[i + 2] || 0];
+      x = nx;
+      y = ny;
+    }
+  }
+  return out;
+}
+
+export function decodeStroke(str) {
+  const v = [...str].map((c) => A64.indexOf(c));
+  let x = v[0] * 64 + v[1], y = v[2] * 64 + v[3];
+  const s = [x, y, v[4]];
+  for (let i = 5; i + 2 < v.length; i += 3) {
+    x += v[i] - 32;
+    y += v[i + 1] - 32;
+    s.push(x, y, v[i + 2]);
+  }
+  return s;
+}
+
+export const encodeLines = (lines) => lines.map((l) => l.map(encodeStroke).join(' '));
+export const decodeLines = (lines) => (lines || []).map((l) => (l ? l.split(' ').map(decodeStroke) : []));
+
+/** {pos, s: строки образца, l: штрихи по пустым линейкам} или null. */
+export function writing(kidId, date) {
+  const r = store.get(writingSlot(kidId), 'w:' + date);
+  return r && r.l ? r : null;
+}
+
+export function saveWriting(kidId, date, pos, rows, lines) {
+  const name = writingSlot(kidId);
+  store.put(name, 'w:' + date, { pos, s: rows, l: encodeLines(lines) });
+  // старое — в «пустышки» (просто удалить нельзя: слияние вернёт запись с другого устройства)
+  const live = () => Object.entries(store.slot(name).entries).filter(([k, v]) => k.startsWith('w:') && v.l).map(([k]) => k).sort().reverse();
+  live().slice(KEEP_DAYS).forEach((k) => store.put(name, k, { x: 1 }));
+  for (let keys = live(); keys.length > 1 && JSON.stringify(store.slot(name)).length > MAX_SLOT; keys = live()) store.put(name, keys.at(-1), { x: 1 });
+}
+
 /**
  * Добавляет урок «Прописи» последним в учебные дни недели (кроме каникул).
  * Сегодня — пока очередь не кончилась; прошедшие дни — только если прописи в этот день уже сданы;

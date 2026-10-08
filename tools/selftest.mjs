@@ -149,6 +149,22 @@ ok('сборка и проверка вымышленной недели; в ф�
 }
 ok('прописи: очереди, повторение, эталонные задания, урок в учебный день');
 
+// прописи: хранение написанного
+{
+  const st = [10, 20, 5, 11, 21, 6, 90, 150, 0, 0, 0, 10];
+  const back = propisi.decodeStroke(propisi.encodeStroke(st));
+  for (const i of [0, 3]) assert.deepEqual(back.slice(i, i + 3), st.slice(i, i + 3));
+  assert.deepEqual(back.slice(-3), st.slice(-3), 'большой скачок дробится, конец на месте');
+  assert.deepEqual(propisi.decodeLines(propisi.encodeLines([[[1000, 184, 10]], []])), [[[1000, 184, 10]], []]);
+  for (let d = 1; d <= 12; d++) propisi.saveWriting('kw', `2026-11-${String(d).padStart(2, '0')}`, d, [], [[st]]);
+  const live = Object.entries(store.slot('w-kw').entries).filter(([, v]) => v.l).map(([k]) => k).sort();
+  assert.equal(live.length, 10);
+  assert.equal(live[0], 'w:2026-11-03');
+  assert.equal(propisi.writing('kw', '2026-11-01'), null);
+  assert.deepEqual(propisi.decodeLines(propisi.writing('kw', '2026-11-12').l)[0][0].slice(0, 3), [10, 20, 5]);
+}
+ok('прописи: штрихи кодируются без потерь, хранятся последние 10 дней');
+
 execFileSync(process.execPath, [path.join(ROOT, 'tools/kl.mjs'), 'check-shell'], { encoding: 'utf8' });
 ok('sw.js: список файлов оболочки полный');
 console.log('Все проверки пройдены.');

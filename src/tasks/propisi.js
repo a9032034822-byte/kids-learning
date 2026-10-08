@@ -4,7 +4,7 @@
 import { h } from '../util.js';
 import { t } from '../i18n.js';
 import * as store from '../store.js';
-import { plan, getPos, setPos } from '../propisi.js';
+import { plan, getPos, setPos, saveWriting } from '../propisi.js';
 
 export const W = 1000;
 export const H = 184;
@@ -172,7 +172,7 @@ export function renderSheet(rows, lines, opts = {}) {
       if (!lines[li]) lines[li] = [];
       const cv = lineCanvas('pz-blank', (c) => (ruling(c), lines[li].forEach((s) => drawStroke(c, s))), ro);
       canvases.push(cv);
-      if (opts.writable) opts.writable(cv, li);
+      if (opts.writable) cv.classList.add('pz-w'), opts.writable(cv, li);
       box.append(cv);
     }
   }
@@ -197,6 +197,7 @@ export function mount(el, task, ctx) {
   const lines = [];
   const history = [];
   let sent = false;
+  let rows = null;
 
   const any = () => history.length > 0;
   const action = () =>
@@ -204,6 +205,7 @@ export function mount(el, task, ctx) {
       if (sent || !any()) return;
       sent = true;
       if (!again) setPos(ctx.kidId, task.kind, pos + 1);
+      if (rows) saveWriting(ctx.kidId, task.date, pos, rows, lines);
       ctx.feedback('info', '👀 ' + t(L, 'waitParent'));
       setTimeout(() => ctx.finish({ errors: 0, extra: { pos } }), 1200);
     }, { disabled: !any() });
@@ -270,7 +272,8 @@ export function mount(el, task, ctx) {
   );
   action();
   fontReady().then(() => {
-    const sh = renderSheet(sheet(p), lines, { writable });
+    rows = sheet(p);
+    const sh = renderSheet(rows, lines, { writable });
     box.replaceChildren(sh);
     undo.onclick = () => {
       const li = history.pop();

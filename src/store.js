@@ -161,6 +161,17 @@ export function setApproval(kidId, weekId, taskId, ok) {
   put('parent', aKey(kidId, weekId, taskId), { ok: !!ok });
 }
 
+/** Родитель вернул задание переписать. Действует, пока ребёнок не сдал его заново. */
+export function setRedo(kidId, weekId, taskId) {
+  put('parent', aKey(kidId, weekId, taskId), { ok: false, redo: true });
+}
+
+export function redoAsked(kidId, weekId, taskId) {
+  const a = get('parent', aKey(kidId, weekId, taskId));
+  const rec = taskRec(kidId, weekId, taskId);
+  return !!(a && a.redo && rec && (a.ts || 0) > (rec.ts || 0));
+}
+
 export function stats(kidId, scheduled, holidays, today) {
   const e = slot(kidSlot(kidId)).entries;
   let stars = 0;

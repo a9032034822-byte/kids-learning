@@ -28,7 +28,7 @@ export function taskTitle(task, lang = 'ru') {
 export function taskStatus(kidId, weekId, task) {
   const rec = store.taskRec(kidId, weekId, task.id);
   if (!rec || !rec.done) return 'todo';
-  if (needsApproval(task)) return store.approval(kidId, weekId, task.id) ? 'approved' : 'pending';
+  if (needsApproval(task)) return store.approval(kidId, weekId, task.id) ? 'approved' : store.redoAsked(kidId, weekId, task.id) ? 'todo' : 'pending';
   return 'done';
 }
 
