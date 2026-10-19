@@ -194,7 +194,7 @@ export function saveWriting(kidId, date, pos, rows, lines) {
 
 /**
  * Добавляет урок «Прописи» последним в учебные дни недели (кроме каникул).
- * Сегодня — пока очередь не кончилась; прошедшие дни — только если прописи в этот день уже сданы;
+ * Сегодня и прошедшие дни — пока очередь не кончилась (несданные остаются и попадают в «Догнать»);
  * будущие — нет (позиция станет известна в свой день). Вызывать можно сколько угодно раз.
  */
 export function inject(week, weekId, kids, holidays, today) {
@@ -208,7 +208,7 @@ export function inject(week, weekId, kids, holidays, today) {
       if (!kind || !day.lessons.length || inHolidays(day.date, holidays) || day.date > today) continue;
       const id = taskIdOf(day.date);
       const rec = store.taskRec(kid.id, weekId, id);
-      if (!(rec && rec.done) && (day.date < today || getPos(kid.id, kind) >= QUEUES[kind].length)) continue;
+      if (!(rec && rec.done) && getPos(kid.id, kind) >= QUEUES[kind].length) continue;
       day.lessons.push({ id, subject: 'ru', title: 'Прописи', tasks: [{ id, type: 'propisi', title: 'Прописи', approve: true, kind, date: day.date }] });
     }
   }
